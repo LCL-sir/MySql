@@ -1,0 +1,341 @@
+# --------------------数据库--------------------
+
+# 创建数据库
+# CREATE DATABASE 数据库名;
+CREATE DATABASE test;
+
+# 判断数据库是否已经存在，不存在则创建数据库
+# CREATE DATABASE IF NOT EXISTS 数据库名;
+
+# 创建数库并指定字符集
+# CREATE DATABASE 数据库名 CHARACTER SET 字符集;
+
+# 看有哪些数据库
+SHOW DATABASES;
+
+# 查看某个数据库的定义信息
+# show create database 数据库名;
+show create database test;
+
+# 修改数据库默认字符集
+# ALTER DATABASE 数据库名 DEFAULT CHARACTER SET 字符集;
+ALTER DATABASE test DEFAULT CHARACTER SET utf8;
+
+# 删除数据库
+# DROP DATABASE 数据库名;
+DROP DATABASE test;
+
+# 查看正在使用的数据库
+SELECT DATABASE();
+
+# 进入/使用/切换/指定数据库
+# USE 数据库名;
+USE test;
+
+
+
+
+
+
+
+
+
+
+# --------------------增--------------------
+
+
+# 前提先使用某个数据库
+
+# 创建表
+# CREATE TABLE 表名 (
+#  字段名 字段类型,
+#  字段名 字段类型
+# );
+CREATE TABLE users(
+  id int PRIMARY KEY AUTO_INCREMENT, -- 编号
+  name varchar(20) NOT NULL , -- 姓名
+  age int NOT NULL , -- 年龄
+  sex varchar(5) NOT NULL , -- 性别
+  address varchar(100) NOT NULL , -- 地址
+  math int , -- 数学
+  english int -- 英语
+);
+
+# 快速创建一个表结构相同的表
+# CREATE TABLE 新表名 LIKE 旧表名;
+CREATE TABLE teacher LIKE USERS;
+
+# 插入表中记录数据
+# INSERT [INTO] 表名 [字段名] VALUES (字段值);
+INSERT INTO student (name) VALUES ('李欢欢');
+INSERT INTO student (name,age) VALUES ('李欢欢',18);
+
+INSERT INTO users(id,NAME,age,sex,address,math,english) VALUES
+       (1,'马云',55,'男','杭州',66,78),
+       (2,'马化腾',45,'女','深圳',98,87),
+       (3,'马景涛',55,'男','香港',56,77),
+       (4,'柳岩',20,'女','湖南',76,65),
+       (5,'柳青',20,'男','湖南',86,NULL),
+       (6,'刘德华',57,'男','香港',99,99),
+       (7,'马德',22,'女','香港',99,99),
+       (8,'德玛西亚',18,'男','南京',56,65);
+
+
+
+
+
+
+
+
+# --------------------删--------------------
+
+# 直接删除表
+# DROP TABLE 表名;
+DROP TABLE student;
+
+# 判断表是否存在，如果存在则删除表
+# DROP TABLE IF EXISTS 表名;
+DROP TABLE IF EXISTS teacher;
+
+# 删除 列 数据
+# ALTER TABLE 表名 DROP 列名;
+ALTER TABLE users DROP sr;
+
+# 删除表中符合条件的数据
+# DELETE FROM 表名 [WHERE 条件表达式];
+# 不带指定 WHERE , 表中所有数据都会被删除
+# DELETE FROM 表名;
+DELETE FROM student WHERE age=18;
+
+# 使用 truncate 删除表中所有记录
+# TRUNCATE TABLE 表名;
+# TRUNCATE 与 DELETE 的区别： TRUNCATE 相当于删除表的结构，在创建新表。
+TRUNCATE TABLE student;
+
+
+
+
+
+
+
+
+
+
+# --------------------改--------------------
+
+# 修改表结构
+# 添加表 列 数据
+# ALTER TABLE 表名 ADD 列名 类型;
+ALTER TABLE users ADD birthday int;
+
+# 修改列类型
+# ALTER TABLE 表名 MODIFY 列名 新的类型;
+ALTER TABLE users MODIFY birthday date;
+
+# 修改列名
+# ALTER TABLE 表名 CHANGE 旧列名 新列名 类型;
+ALTER TABLE users CHANGE birthday sr date;
+
+
+# 修改表名
+# RENAME TABLE 表名 TO 新表名;
+RENAME TABLE users TO student;
+
+# 修改字符集
+# ALTER TABLE 表名 character set 字符集;
+ALTER TABLE teacher character set gbk;
+
+# 更新表记录
+# UPDATE 表名 SET 列名=值 [WHERE 条件表达式];
+# 不带 WHERE 会更改所有列的值
+# 一次更改多列 在 列名=值 后面继续添加 列名=值
+UPDATE student SET name="李盼盼" WHERE age=18;
+
+
+
+
+
+
+
+
+# --------------------查--------------------
+
+#查看数据库中所有的表
+SHOW tables;
+
+# 查看表结构/详情
+# DESC 表名;
+DESC USERS;
+
+# 查看创建表的SQL语句
+# SHOW CREATE TABLE 表名;
+SHOW CREATE TABLE USERS;
+
+# 查询表中数据
+# SELECT 列名 FROM 表名 [WHERE 条件表达式]
+
+# 查询所有列数据
+# SELECT * FROM 表名;
+SELECT * FROM student;
+
+# 查询指定列
+# SELECT 字段名 1, 字段名 2, 字段名 3, ... FROM 表名;
+SELECT name FROM student;
+
+# 指定列的别名进行查询 -- 使用别名的好处：显示时使用新名字，更好看，但此操作并不会改变表的结构
+# SELECT 字段名 1 AS 别名, 字段名 2 AS 别名... FROM 表名;
+SELECT name AS 姓名 FROM student;
+
+# 对列和表同时指定别名
+# SELECT 字段名 1 AS 别名, 字段名 2 AS 别名... FROM 表名 AS 表别名;
+SELECT name AS 姓名,age AS 年龄 FROM student AS 学生;
+
+# 清除重复值的显示
+# SELECT DISTINCT 字段名 FROM 表名;
+SELECT DISTINCT name FROM student;
+
+# 查询结果参与运算
+# 某列数据和固定值运算 -- 不会改变数据库内容 只是显示改变
+# SELECT 列名 1 + 固定值 FROM 表名;
+SELECT age + 50 FROM student;
+
+# 一列与另一列数据参与运算 -- 参与运算的必须是数值类型
+# SELECT 列名 1 + 列名 2 FROM 表名;
+
+# 条件查询  --  = 表示等于   <> 表示不等于
+# SELECT 字段名 FROM 表名 WHERE 条件;
+SELECT * FROM users WHERE math>80;
+SELECT * FROM users WHERE age>35&&sex='男';
+
+# in 关键字 in 里面的数据都会作为一次条件,只要满足条件就会显示
+# SELECT 字段名 FROM 表名 WHERE 字段 in (数据 1, 数据 2...);
+SELECT * FROM users WHERE id in (1,3,5);
+# 查询不是 1,3,5 的数据
+SELECT * FROM users WHERE id not in (1,3,5);
+
+# 范围查询
+# SELECT * FROM 表名 WHERE 列名 BETWEEN 开始范围 AND 结束范围;
+SELECT * FROM users WHERE english BETWEEN 75 AND 90;
+
+# 模糊查询 like 关键字 -- % 匹配任意多个字符  _ 匹配一个字符
+# SELECT * FROM 表名 WHERE 字段名 LIKE '通配符字符串';
+SELECT * FROM users WHERE USERS.name LIKE '马%';
+SELECT * FROM users WHERE USERS.name LIKE '马_';
+
+
+# 排序 -- 将查询的结果排序输出 只是显示顺序,不会影响数据库中的顺序
+# SELECT 字段名 FROM 表名 WHERE 字段=值 ORDER BY 字段名 [ASC|DESC]; -- ASC 升序  -- DESC 降序
+SELECT * FROM users  ORDER BY math DESC ;
+
+# 组合排序 如果第一个字段相等就按着第二个字段排序
+# SELECT 字段名 FROM 表名 WHERE 字段=值 ORDER BY 字段名 1 [ASC|DESC], 字段名 2 [ASC|DESC];
+SELECT * FROM users  ORDER BY math DESC,age ASC;
+
+# 聚合函数 -- 对一列的值进行计算，返回一个结果值。会忽略空值null
+# max(列名) -- 求这一列的最大值
+# min(列名) -- 求这一列的最小值
+# avg(列名) -- 求这一列的平均值
+# count(列名) -- 统计这一列有多少条记录
+# sum(列名) -- 对这一列求和
+# SELECT COUNT(列名) AS 总人数 FROM 表名;
+SELECT COUNT(id) AS 总人数 FROM users;
+
+# 分组 -- 对查询数据进行分组，相同数据作为一组
+# SELECT 字段 1,字段 2... FROM 表名 GROUP BY 分组字段 [HAVING 条件];
+SELECT sex FROM users GROUP BY sex ;
+
+# LIMIT -- 限制查询记录的条数
+# SELECT *|字段列表 [as 别名] FROM 表名 [WHERE 子句] [GROUP BY 子句][HAVING 子句][ORDER BY 子句][LIMIT 子句];
+# 从第三条开始显示 显示6条数据
+select * from users limit 2,6;
+# 第一个参数是0可以省略 -- 如果不够有多少条就显示多少条
+select * from users limit 6;
+
+
+
+
+
+
+
+
+
+# --------------------数据库表的约束 -- 对表中数据进行限制--------------------
+
+# 主键  PRIMARY KEY -- 一般把每个表的id 作为主键  主键特点 非空 唯一
+# 在创建表的时候给字段添加主键 -- 字段名 字段类型 PRIMARY KEY
+CREATE TABLE teacher (
+    id int PRIMARY KEY ,
+    name varchar(20),
+    age int
+);
+# 在已有表中添加主键
+# ALTER TABLE 表名 ADD PRIMARY KEY(字段名);
+ALTER TABLE student ADD PRIMARY KEY(id);
+
+# 删除主键
+# Alter TABLE 表名 DROP PRIMARY KEY ;
+Alter TABLE student DROP PRIMARY KEY ;
+
+# 主键自增 -- 数据库自己生成主键字段的值
+# 在已有表中添加主键自增
+# ALTER TABLE 表名 MODIFY 列名 类型 AUTO_INCREMENT ;
+ALTER TABLE student MODIFY id INTEGER AUTO_INCREMENT ;
+
+# 创建表时 -- 主键自增
+CREATE TABLE student(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20),
+    age int
+);
+
+# 创建表时 主键自增 指定起始值
+CREATE TABLE student(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20),
+    age int
+)AUTO_INCREMENT = 1000;
+
+# 创建表之后修改起始值
+# ALTER TABLE 表名 AUTO_INCREMENT=起始值;
+
+# 唯一 unique  --  表中某一列不能出现重复的值
+# 字段名 字段类型 UNIQUE
+# create table 表名 (
+#      id int,
+#      name varchar(20) unique
+# )
+
+# 非空 not null -- 某一列不能为null
+# 字段名 字段类型 NOT NULL
+# create table 表名 (
+#      id int,
+#      name varchar(20) not null,
+#      gender char(1)
+# )
+
+# 默认值
+# 字段名 字段类型 DEFAULT 默认值
+# create table 表名 (
+#      id int,
+#      name varchar(20),
+#      address varchar(20) default '默认值'
+# )
+
+# 外键 foreign key  --  使用另一个表中的列数据 且 自身指定的列不能超出另一个表中列数据
+
+# 创建表时增加外键
+# [CONSTRAINT] [外键约束名称] FOREIGN KEY(外键字段名) REFERENCES 主表名(主键字段名)
+# create table employee(
+#      id int primary key auto_increment,
+#      name varchar(20),
+#      age int,
+#      dep_id int, -- 外键对应主表的主键
+#     -- 创建外键约束
+#      constraint emp_depid_fk foreign key (dep_id) references department(id)
+# )
+
+# 在已有的表中增加外键
+# ALTER TABLE 从表 ADD [CONSTRAINT] [外键约束名称] FOREIGN KEY (外键字段名) REFERENCES 主表(主键字段名);
+
+# 删除外键
+# ALTER TABLE 从表 drop foreign key 外键名称;
